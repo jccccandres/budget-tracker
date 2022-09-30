@@ -23,7 +23,7 @@ const darkTheme = createTheme({
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <SnackbarProvider maxSnack={3}>
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
