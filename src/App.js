@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import { SnackbarProvider } from 'notistack';
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import LandingRoutes from './routes/LandingRoutes';
 
-function App() {
+const darkTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#222f3e",
+      light: "#576574",
+      text: "#ffffff"
+    },
+    secondary: {
+      main: "#8395a7",
+      light: "#c8d6e5"
+    },
+    background: {
+      default: "#1b242e"
+    }
+  }
+});
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <SnackbarProvider maxSnack={3}>
+        <ThemeProvider theme={darkTheme}>
+          <CssBaseline />
+          <LandingRoutes />
+        </ThemeProvider>
+      </SnackbarProvider>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
