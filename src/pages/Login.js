@@ -55,8 +55,8 @@ const Login = () => {
 				enqueueSnackbar("Login successful", {
 					variant: 'success',
 					anchorOrigin: {
-						vertical: 'top',
-						horizontal: 'center'
+						vertical: theme.snackbar.position.vertical,
+						horizontal: theme.snackbar.position.horizontal
 					},
 					autoHideDuration: 3000
 				});
@@ -65,8 +65,8 @@ const Login = () => {
 				enqueueSnackbar(response.response.data.message, {
 					variant: 'error',
 					anchorOrigin: {
-						vertical: 'top',
-						horizontal: 'center'
+						vertical: theme.snackbar.position.vertical,
+						horizontal: theme.snackbar.position.horizontal
 					},
 					autoHideDuration: 3000
 				});

@@ -17,6 +17,17 @@ const darkTheme = createTheme({
     },
     background: {
       default: "#1b242e"
+    },
+    text: {
+      primary: "#c8d6e5",
+      success: "#10ac84",
+      danger: "#ee5253"
+    }
+  },
+  snackbar: {
+    position: {
+      vertical: 'bottom',
+      horizontal: 'left'
     }
   }
 });

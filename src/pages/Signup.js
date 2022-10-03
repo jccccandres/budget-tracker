@@ -47,8 +47,8 @@ const Signup = () => {
 				enqueueSnackbar(response.data.message, {
 					variant: 'success',
 					anchorOrigin: {
-						vertical: 'top',
-						horizontal: 'center'
+						vertical: theme.snackbar.position.vertical,
+						horizontal: theme.snackbar.position.horizontal
 					},
 					autoHideDuration: 3000
 				});
