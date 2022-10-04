@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { AppBar, Box, Button, Divider, Fab, Grid, IconButton, List, ListItem, styled, SwipeableDrawer, Toolbar, Typography, useTheme } from '@mui/material';
+import { AppBar, Box, Button, Divider, Grid, IconButton, List, ListItem, styled, SwipeableDrawer, Toolbar, Typography, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 
-import { useLogInStore } from '../stores/AuthenticateStore';
-import { useTokenStore } from '../stores/AuthenticateStore';
+import { useLogInStore, useTokenStore, useTypeStore } from '../stores';
 
-import { logout } from '../api';
 import FilterDrawer from '../components/FilterDrawer';
-import AddTransactionModal from '../pages/Transactions/AddTransactionModal';
+
+import { logout, getTypes } from '../api';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   alignItems: 'flex-start',
@@ -41,18 +39,13 @@ const Layout = () => {
     setSecondDrawerOpen(false);
   }
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const handleModalOpen = () => {
-    setModalOpen(true);
-  }
-  const handleModalClose = () => {
-    setModalOpen(false);
-  }
-
   const { loggedOut, setUser, user } = useLogInStore(
 		state => ({ loggedOut: state.loggedOut, setUser: state.setUser, user: state.user })
 	);
   const setToken = useTokenStore(state => state.setToken);
+  const { types, setTypes } = useTypeStore(
+    state => ({ types: state.types, setTypes: state.setTypes })
+  );
 
   const handleLogOut = () => {
     logout()
@@ -86,6 +79,16 @@ const Layout = () => {
       console.log(error);
     });
   }
+
+  const handleGetTypes = () => {
+    getTypes().then((response) => {
+      setTypes(response.data.data);
+    });
+  }
+
+  useEffect(() => {
+    handleGetTypes();
+  }, []);
 
   return (
     <>
@@ -209,24 +212,6 @@ const Layout = () => {
       >
         <Outlet />
       </Grid>
-
-      <Fab 
-        color="success" 
-        aria-label="add"
-        sx={{
-          position: 'absolute',
-          bottom: 20,
-          right: 20
-        }}
-        onClick={handleModalOpen}
-      >
-        <AddIcon />
-      </Fab>
-      
-      <AddTransactionModal
-        modalOpen={modalOpen}
-        handleModalClose={handleModalClose}
-      />
     </>
   );
 };

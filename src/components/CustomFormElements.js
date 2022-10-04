@@ -117,10 +117,12 @@ const StyledAccordion = styled(Accordion)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.secondary.light,
     "& .MuiAccordionSummary-root": {
-      borderBottom: "1px solid",
       "& .MuiAccordionSummary-content": {
         justifyContent: "space-between"
       }
+    },
+    "& .MuiCollapse-root": {
+      borderTop: "1px solid"
     }
   }
 }));

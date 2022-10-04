@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Tab, Tabs, Typography, styled, AccordionSummary, AccordionDetails, Table, TableBody, TableRow, TableCell, useTheme } from '@mui/material';
+import { Box, Tab, Tabs, Typography, styled, AccordionSummary, AccordionDetails, Table, TableBody, TableRow, TableCell, useTheme, Fab } from '@mui/material';
 import { TabContext, TabPanel } from '@mui/lab';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AddIcon from '@mui/icons-material/Add';
+
+import AddTransactionModal from '../pages/Transactions/AddTransactionModal';
 import { StyledAccordion, StyledTabPanel } from '../components/CustomFormElements';
 
 const StyledTab = styled(Tab)(({ theme }) => ({
@@ -23,6 +26,14 @@ const Transactions = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleModalOpen = () => {
+    setModalOpen(true);
+  }
+  const handleModalClose = () => {
+    setModalOpen(false);
+  }
 
   return (
     <>
@@ -119,6 +130,24 @@ const Transactions = () => {
 
         </StyledTabPanel>
       </TabContext>
+
+      <Fab
+        color="success" 
+        aria-label="add"
+        sx={{
+          position: 'absolute',
+          bottom: 20,
+          right: 20
+        }}
+        onClick={handleModalOpen}
+      >
+        <AddIcon />
+      </Fab>
+      
+      <AddTransactionModal
+        modalOpen={modalOpen}
+        handleModalClose={handleModalClose}
+      />
     </>
   );
 };

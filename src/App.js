@@ -20,6 +20,7 @@ const darkTheme = createTheme({
     },
     text: {
       primary: "#c8d6e5",
+      secondary: "#222f3e",
       success: "#10ac84",
       danger: "#ee5253"
     }
