@@ -10,7 +10,6 @@ const Login = () => {
 	const styles = {
 		root: {
 			height: "100vh",
-			backgroundColor: theme.palette.grey[900],
     	alignItems: "center",
     	justifyContent: "center"
 		},
@@ -94,7 +93,7 @@ const Login = () => {
         md={4}
 				lg={3}
 			>
-				<Typography variant="h5">
+				<Typography variant="h5" sx={{ color: theme.palette.text.secondary }}>
 					Sign In
 				</Typography>
 				<form onSubmit={handleSubmit}>
@@ -106,6 +105,11 @@ const Login = () => {
 						value={username}
 						onChange={(e) => setUsername(e.target.value)}
             autoFocus
+						sx={{
+							input: {
+								color: theme.palette.text.secondary
+							}
+						}}
 					/>
 					<TextField 
 						variant='outlined'
@@ -115,6 +119,11 @@ const Login = () => {
 						type="password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
+						sx={{
+							input: {
+								color: theme.palette.text.secondary
+							}
+						}}
 					/>
 					<Button
 						type="submit"

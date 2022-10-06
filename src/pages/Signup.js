@@ -9,7 +9,6 @@ const Signup = () => {
 	const styles = {
 		root: {
 			height: "100vh",
-			backgroundColor: theme.palette.grey[900],
     	alignItems: "center",
     	justifyContent: "center"
 		},
@@ -74,7 +73,7 @@ const Signup = () => {
         md={4}
 				lg={3}
 			>
-				<Typography variant="h5">
+				<Typography variant="h5" sx={{ color: theme.palette.text.secondary }}>
 					Register
 				</Typography>
 				<form onSubmit={handleSubmit}>
@@ -86,6 +85,11 @@ const Signup = () => {
 						onChange={(e) => setName(e.target.value)}
 						error={errors.name && true}
 						helperText={errors.name && errors.name[0]}
+						sx={{
+							input: {
+								color: theme.palette.text.secondary
+							}
+						}}
 					/>
           <TextField 
 						variant='outlined'
@@ -95,6 +99,11 @@ const Signup = () => {
 						onChange={(e) => setEmail(e.target.value)}
 						error={errors.email && true}
 						helperText={errors.email && errors.email[0]}
+						sx={{
+							input: {
+								color: theme.palette.text.secondary
+							}
+						}}
 					/>
 					<TextField 
 						variant='outlined'
@@ -104,6 +113,11 @@ const Signup = () => {
 						onChange={(e) => setUsername(e.target.value)}
 						error={errors.username && true}
 						helperText={errors.username && errors.username[0]}
+						sx={{
+							input: {
+								color: theme.palette.text.secondary
+							}
+						}}
 					/>
 					<TextField 
 						type="password"
@@ -114,6 +128,11 @@ const Signup = () => {
 						onChange={(e) => setPassword(e.target.value)}
 						error={errors.password && true}
 						helperText={errors.password && errors.password[0]}
+						sx={{
+							input: {
+								color: theme.palette.text.secondary
+							}
+						}}
 					/>
           <TextField 
 						type="password"
@@ -124,6 +143,11 @@ const Signup = () => {
 						onChange={(e) => setPasswordConfirmation(e.target.value)}
 						error={errors.password_confirmation && true}
 						helperText={errors.password_confirmation && errors.password_confirmation[0]}
+						sx={{
+							input: {
+								color: theme.palette.text.secondary
+							}
+						}}
 					/>
 					<Button
 						type="submit"
