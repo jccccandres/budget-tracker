@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { Backdrop, Box, Fade, FormControl, MenuItem, Modal, useTheme, TextField, Button, Typography } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Backdrop, Box, Fade, FormControl, MenuItem, Modal, useTheme, Button, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 
 // components
-import { StyledInputLabel, StyledTextField, StyledSelect, StyledDatePicker } from '../../components/CustomFormElements';
+import { StyledInputLabel, StyledTextField, StyledSelect } from '../../components/CustomFormElements';
 
 // stores
 import { useTypeStore, useLogInStore } from '../../stores';
 
 // api
-import { createType } from '../../api';
+import { createType, createTransaction } from '../../api';
 
 const AddTransactionModal = ({ ...props }) => {
-  const { modalOpen, handleModalClose } = props;
+  const { modalOpen, handleModalClose, handleClickTab, tabDateValue } = props;
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
   // for form input
   const [type, setType] = useState("");
   const [category, setCategory] = useState("");
-  const [newCategory, setNewCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [transactionDate, setTransactionDate] = useState(new Date().toJSON().slice(0, 10));
 
+  const [newCategory, setNewCategory] = useState("");
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState({});
 
@@ -39,7 +40,7 @@ const AddTransactionModal = ({ ...props }) => {
 
   useEffect(() => {
     // console.log(types);
-    // console.log(categories);
+    // console.log(transactionDate);
   })
 
   
@@ -83,6 +84,43 @@ const AddTransactionModal = ({ ...props }) => {
     }).catch((error) => {
       console.log(error);
     });
+  }
+
+  const handleSaveTransaction = () => {
+    createTransaction({
+      'userId': useLogInStore.getState().user.id,
+      'typeId': type,
+      'categoryId': category,
+      'description': description,
+      'amount': amount,
+      'dateTransact': transactionDate
+    }).then((response) => {
+      console.log(response);
+      if (response.status === 201) {
+        enqueueSnackbar(response.data.message, {
+          variant: 'success',
+          anchorOrigin: {
+            vertical: theme.snackbar.position.vertical,
+            horizontal: theme.snackbar.position.horizontal
+          },
+          autoHideDuration: 3000
+        });
+        handleClickTab(tabDateValue);
+        handleModalClose();
+      }
+      else {
+        enqueueSnackbar(response.response.data.message, {
+          variant: 'error',
+          anchorOrigin: {
+            vertical: theme.snackbar.position.vertical,
+            horizontal: theme.snackbar.position.horizontal
+          },
+          autoHideDuration: 3000
+        });
+      }
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
   return (
@@ -145,7 +183,13 @@ const AddTransactionModal = ({ ...props }) => {
                 {
                   (categories.length > 0) && (
                     categories.map((category) => (
-                      <MenuItem sx={{ color: theme.palette.text.secondary }} key={category.id} value={category.id}>{category.description}</MenuItem>
+                      <MenuItem 
+                        sx={{ color: theme.palette.text.secondary }} 
+                        key={category.id} 
+                        value={category.id}
+                      >
+                        {category.description}
+                      </MenuItem>
                     ))
                   )
                 }
@@ -164,37 +208,42 @@ const AddTransactionModal = ({ ...props }) => {
               />
             </FormControl>
 
-            {/* <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
               <StyledTextField 
                 variant='outlined'
                 fullWidth
                 margin="normal"
                 label="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
-            </FormControl> */}
+            </FormControl>
 
-            {/* <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
               <StyledTextField 
                 variant='outlined'
                 fullWidth
                 margin="normal"
                 label="Amount"
+                type='number'
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
               />
-            </FormControl> */}
+            </FormControl>
 
-            {/* <FormControl fullWidth sx={{ mb: 2 }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <StyledDatePicker
-                  label="Date"
-                  renderInput={(params) => <TextField {...params} helperText={null} />}
-                />
-              </LocalizationProvider>
-            </FormControl> */}
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <StyledTextField 
+                type='date'
+                value={transactionDate}
+                onChange={(e) => setTransactionDate(e.target.value)}
+              />
+            </FormControl>
 
             <FormControl fullWidth>
               <Button
                 variant="contained"
                 color="secondary"
+                onClick={handleSaveTransaction}
               >
                 Save
               </Button>
