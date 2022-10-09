@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Tab, Tabs, Typography, styled, AccordionSummary, AccordionDetails, Table, TableBody, TableRow, TableCell, useTheme, Fab } from '@mui/material';
-import { TabContext, TabPanel } from '@mui/lab';
+import { TabContext } from '@mui/lab';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 
 import AddTransactionModal from '../pages/Transactions/AddTransactionModal';
-import { StyledAccordion, StyledTabPanel } from '../components/CustomFormElements';
+import { StyledAccordion } from '../components/CustomFormElements';
+
+// api
+import { getMonthsYear, getTransactions } from '../api/Transactions';
+import { useTransactionsStore } from '../stores/TransactionStore';
 
 const StyledTab = styled(Tab)(({ theme }) => ({
   "&.MuiTab-root": {
@@ -21,10 +25,11 @@ const StyledTab = styled(Tab)(({ theme }) => ({
 
 const Transactions = () => {
   const theme = useTheme();
-  const [value, setValue] = useState("4");
+  const [tabValue, setTabValue] = useState('0');
+  const [tabDateValue, setTabDateValue] = useState('');
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
   };
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -35,6 +40,44 @@ const Transactions = () => {
     setModalOpen(false);
   }
 
+  const { 
+    transactions, 
+    setTransactions,
+    monthsYear,
+    setMonthsYear
+  } = useTransactionsStore(
+    state => ({ 
+      transactions: state.transactions, 
+      setTransactions: state.setTransactions,
+      monthsYear: state.monthsYear, 
+      setMonthsYear: state.setMonthsYear
+    })
+  );
+  
+  useEffect(() => {
+    getMonthsYear().then((response) => {
+      const resp_data = response.data.data;
+      setMonthsYear(resp_data);
+      setTabValue((resp_data.length - 1).toString());
+      handleClickTab(resp_data[resp_data.length - 1].datetransact);
+      setTabDateValue(resp_data[resp_data.length - 1].datetransact);
+    });
+  }, []);
+
+  const handleClickTab = (value) => {
+    getTransactions({
+      date: value
+    }).then((response) => {
+      setTransactions(response.data);
+      setTabDateValue(value);
+    });
+  }
+
+  useEffect(() => {
+    // console.log(monthsYear);
+    // console.log(transactions);
+  })
+
   return (
     <>
       <Box>
@@ -42,93 +85,73 @@ const Transactions = () => {
         <Typography variant="p">Reprehenderit ex elit laborum ullamco voluptate non.</Typography>
       </Box>
 
-      <TabContext value={value}>
+      <TabContext value={tabValue}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
-            value={value}
-            onChange={handleChange}
+            value={tabValue}
+            onChange={handleTabChange}
             variant="scrollable"
             scrollButtons="auto"
           >
-            <StyledTab value="1" label="Jul 2022" />
-            <StyledTab value="2" label="Aug 2022" />
-            <StyledTab value="3" label="Sep 2022" />
-            <StyledTab value="4" label="Oct 2022" />
+            {
+              monthsYear.map((value, index) => (
+                <StyledTab 
+                  key={index} 
+                  value={index.toString()} 
+                  label={value.monthyear} 
+                  onClick={() => handleClickTab(value.datetransact)}
+                />
+              ))
+            }
           </Tabs>
         </Box>
-        <TabPanel value="1">Item One</TabPanel>
-        <TabPanel value="2">Item Two</TabPanel>
-        <TabPanel value="3">Item Three</TabPanel>
-        <StyledTabPanel value="4">
-
-          <StyledAccordion defaultExpanded>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography>October 3, 2022</Typography>
-              <Typography sx={{ color: theme.palette.text.danger }}>- 5,000.00</Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ px: 1 }}>
-              <Table size="small">
-                <TableBody>
-                  <TableRow>
-                    <TableCell sx={{ textAlign: "left", color: theme.palette.secondary.light, borderBottom: 0 }}>Bills (expense)</TableCell>
-                    <TableCell sx={{ textAlign: "right", color: theme.palette.text.danger, borderBottom: 0 }}>- 5,000.00</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </AccordionDetails>
-          </StyledAccordion>
-
-          <StyledAccordion defaultExpanded>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography>October 2, 2022</Typography>
-              <Typography sx={{ color: theme.palette.text.danger }}>- 1,000.00</Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ px: 1 }}>
-              <Table size="small">
-                <TableBody>
-                  <TableRow>
-                    <TableCell sx={{ textAlign: "left", color: theme.palette.text.primary, borderBottom: 0 }}>Food (expense)</TableCell>
-                    <TableCell sx={{ textAlign: "right", color: theme.palette.text.danger, borderBottom: 0 }}>- 1,000.00</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </AccordionDetails>
-          </StyledAccordion>
-
-          <StyledAccordion defaultExpanded>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography>October 1, 2022</Typography>
-              <Typography sx={{ color: theme.palette.text.success }}>47,000.00</Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ px: 1 }}>
-            <Table size="small">
-                <TableBody>
-                  <TableRow>
-                    <TableCell sx={{ textAlign: "left", color: theme.palette.secondary.light, borderBottom: 0 }}>Salary (income)</TableCell>
-                    <TableCell sx={{ textAlign: "right", color: theme.palette.text.success, borderBottom: 0 }}>50,000.00</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ textAlign: "left", color: theme.palette.secondary.light, borderBottom: 0 }}>Credit Card (expense)</TableCell>
-                    <TableCell sx={{ textAlign: "right", color: theme.palette.text.danger, borderBottom: 0 }}>- 3,000.00</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </AccordionDetails>
-          </StyledAccordion>
-
-        </StyledTabPanel>
+        <Box sx={{ m: 2 }}>
+          {(Object.keys(transactions).length > 0) && (
+            Object.keys(transactions).map((dateIndex, index) => (
+              <StyledAccordion defaultExpanded key={index}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>{ dateIndex }</Typography>
+                  <Typography 
+                    sx={
+                      transactions[dateIndex].sum > 0 ? { color: theme.palette.text.success } : { color: theme.palette.text.danger }
+                    }
+                  >
+                    { Number(transactions[dateIndex].sum).toLocaleString(undefined, {minimumFractionDigits: 2}) }
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ px: 1 }}>
+                  <Table size="small">
+                    <TableBody>
+                      {
+                        transactions[dateIndex].transactions.map((row, index) => (
+                          <TableRow key={index}>
+                            <TableCell sx={{ textAlign: "left", color: theme.palette.secondary.light, borderBottom: 0 }}>
+                              { row.category.description } 
+                              <Typography variant='overline' sx={{ textTransform: 'lowercase' }}> ({ row.type.description })</Typography>
+                            </TableCell>
+                            <TableCell sx={{ textAlign: "right", borderBottom: 0 }}>
+                              <Typography 
+                                sx={
+                                  row.amount > 0 ? { color: theme.palette.text.success } : { color: theme.palette.text.danger }
+                                }
+                              >
+                                { Number(row.amount).toLocaleString(undefined, {minimumFractionDigits: 2}) }
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      }
+                    </TableBody>
+                  </Table>
+                </AccordionDetails>
+              </StyledAccordion>
+            ))
+          )}
+        </Box>
       </TabContext>
 
       <Fab
@@ -147,6 +170,8 @@ const Transactions = () => {
       <AddTransactionModal
         modalOpen={modalOpen}
         handleModalClose={handleModalClose}
+        handleClickTab={handleClickTab}
+        tabDateValue={tabDateValue}
       />
     </>
   );
